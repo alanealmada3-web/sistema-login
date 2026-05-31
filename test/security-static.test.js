@@ -15,6 +15,7 @@ test('cadastro publico decide perfil apenas pelo modo permitido', () => {
   assert.match(auth, /function resolveRegistrationProfile\(modoCadastro\)/)
   assert.match(auth, /modoCadastro === 'ti' \? 'n1' : 'funcionario'/)
   assert.match(auth, /perfil:\s*resolveRegistrationProfile\(req\.body\.modoCadastro\)/)
+  assert.match(auth, /console\.log\('modoCadastro recebido:',\s*req\.body\.modoCadastro\)/)
   assert.match(auth, /emailVerificado:\s*true/)
   assert.doesNotMatch(auth, /perfil:\s*req\.body\.perfil/)
   assert.match(auth, /console\.error\('Erro cadastro:',\s*error\)/)
@@ -27,7 +28,8 @@ test('frontend envia modoCadastro e nao expõe select livre de perfil', () => {
 
   assert.match(html, /name="modoCadastro"/)
   assert.doesNotMatch(html, /name="perfil"/)
-  assert.match(app, /formData\.modoCadastro = selectedAccess === 'ti' \? 'ti' : 'funcionario'/)
+  assert.match(app, /function getActiveRegistrationMode\(\)/)
+  assert.match(app, /formData\.modoCadastro = getActiveRegistrationMode\(\)/)
   assert.match(app, /delete formData\.perfil/)
 })
 

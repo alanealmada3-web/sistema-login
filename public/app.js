@@ -625,6 +625,12 @@ function isAccessCompatible(perfil) {
   return perfil === 'funcionario'
 }
 
+function getActiveRegistrationMode() {
+  return document.querySelector('.access-option.active')?.dataset.access === 'ti'
+    ? 'ti'
+    : 'funcionario'
+}
+
 function updateAuthAccess(access) {
   selectedAccess = access
   accessButtons.forEach((button) => {
@@ -636,7 +642,7 @@ function updateAuthAccess(access) {
     ? tr('authItSubtitle')
     : tr('authEmployeeSubtitle')
 
-  registerForm.modoCadastro.value = access === 'ti' ? 'ti' : 'funcionario'
+  registerForm.modoCadastro.value = getActiveRegistrationMode()
 }
 
 function setMessage(text, type = '') {
@@ -1311,7 +1317,7 @@ registerForm.addEventListener('submit', async (event) => {
 
     delete formData.confirmarSenha
     delete formData.perfil
-    formData.modoCadastro = selectedAccess === 'ti' ? 'ti' : 'funcionario'
+    formData.modoCadastro = getActiveRegistrationMode()
     const data = await request('/auth/cadastro', {
       method: 'POST',
       body: JSON.stringify(formData),

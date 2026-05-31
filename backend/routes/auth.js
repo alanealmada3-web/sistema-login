@@ -162,6 +162,7 @@ router.post('/cadastro', rateLimiters.cadastro, async (req, res) => {
   try {
     const { nome, senha } = req.body
     const email = normalizeEmail(req.body.email)
+    console.log('modoCadastro recebido:', req.body.modoCadastro)
     const validationError = validateRegisterData({ nome, email, senha })
 
     if (validationError) {
