@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LaneDesk</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <button class="theme-toggle" id="themeToggle" type="button" aria-label="Alternar tema">
+    <span class="theme-toggle-track" aria-hidden="true">
+      <span class="theme-toggle-thumb"></span>
+    </span>
+    <span class="theme-toggle-text">Claro</span>
+  </button>
+  <button class="language-toggle" id="languageToggle" type="button" aria-label="Alternar idioma">
+    <span class="language-toggle-track" aria-hidden="true">
+      <span class="language-toggle-thumb"></span>
+    </span>
+    <span class="language-toggle-text">PT</span>
+  </button>
+
+  <main class="app-shell">
+    <section class="auth-panel" id="authPanel" aria-label="Acesso seguro ao LaneDesk">
+      <div class="auth-visual" aria-hidden="true">
+        <div class="visual-copy">
+          <div class="enterprise-logo large-logo">
+            <span class="logo-mark">
+              <span class="logo-grid"></span>
+            </span>
+            <span>
+              <strong>LaneDesk</strong>
+              <small>ITSM seguro para operacoes corporativas</small>
+            </span>
+          </div>
+          <h2>Atendimento de T.I. com governanca, SLA e auditoria em tempo real.</h2>
+          <p>Centralize chamados, identidade, filas e evidencias em uma experiencia pronta para empresas.</p>
+        </div>
+
+        <div class="it-illustration">
+          <div class="server-rack">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          <div class="monitor-card">
+            <div class="monitor-topline">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+            <div class="monitor-chart">
+              <i></i>
+              <i></i>
+              <i></i>
+              <i></i>
+            </div>
+            <div class="monitor-row"></div>
+            <div class="monitor-row short"></div>
+          </div>
+          <div class="security-node node-a"></div>
+          <div class="security-node node-b"></div>
+          <div class="security-node node-c"></div>
+        </div>
+
+        <div class="trust-stack">
+          <span><strong>98%</strong>SLA</span>
+          <span>LGPD</span>
+          <span>MFA</span>
+          <span>SSO</span>
+          <span>RBAC</span>
+          <span>SIEM</span>
+        </div>
+      </div>
+
+      <div class="auth-content">
+        <header class="auth-topbar">
+          <div class="brand-lockup enterprise-logo">
+            <span class="logo-mark small">
+              <span class="logo-grid"></span>
+            </span>
+            <span>LaneDesk</span>
+          </div>
+        </header>
+
+        <div class="brand-block">
+          <p class="eyebrow">Acesso corporativo seguro</p>
+          <h1 id="authTitle">Acesso do Funcionario</h1>
+          <p class="subtitle" id="authSubtitle">Entre com sua identidade corporativa para abrir chamados e acompanhar solicitacoes.</p>
+        </div>
+
+        <div class="access-switch" aria-label="Tipo de acesso">
+          <button class="access-option active" id="employeeAccessButton" type="button" data-access="funcionario">Funcionario</button>
+          <button class="access-option" id="itAccessButton" type="button" data-access="ti">Equipe de T.I.</button>
+        </div>
+
+        <a class="sso-button" id="corporateSsoButton" href="/auth/google" aria-label="Entrar com a conta corporativa">
+          <span class="provider-mark" aria-hidden="true">
+            <span></span><span></span><span></span><span></span>
+          </span>
+          <span class="button-label">Entrar com a Conta Corporativa</span>
+          <span class="button-loader" aria-hidden="true"></span>
+        </a>
+
+        <div class="security-strip" aria-label="Recursos de seguranca">
+          <span><i class="icon-shield" aria-hidden="true"></i>Ambiente LGPD</span>
+          <span><i class="icon-key" aria-hidden="true"></i>MFA</span>
+          <span><i class="icon-link" aria-hidden="true"></i>SSO</span>
+          <span><i class="icon-users" aria-hidden="true"></i>RBAC</span>
+          <span><i class="icon-audit" aria-hidden="true"></i>Auditoria SIEM</span>
+          <span><i class="icon-sla" aria-hidden="true"></i>SLA 98%</span>
+        </div>
+
+        <button class="local-login-toggle" id="localLoginToggle" type="button" aria-expanded="true" aria-controls="localAuthArea">
+          Ocultar login local
+        </button>
+
+        <div class="local-auth-area" id="localAuthArea">
+          <div class="tabs" role="tablist" aria-label="Escolha uma acao">
+            <button class="tab-button active" id="loginTab" type="button">Entrar</button>
+            <button class="tab-button" id="registerTab" type="button">Cadastrar</button>
+            <button class="tab-button" id="recoverTab" type="button">Recuperar Senha</button>
+          </div>
+
+          <form class="form active" id="loginForm">
+            <label>
+              Email
+              <input type="email" name="email" autocomplete="email" inputmode="email" aria-label="Email corporativo" required>
+            </label>
+            <label>
+              Senha
+              <span class="password-field">
+                <input type="password" name="senha" autocomplete="current-password" aria-label="Senha" required>
+                <button class="toggle-password" type="button" data-password-toggle aria-label="Mostrar ou ocultar senha">Ver</button>
+              </span>
+            </label>
+            <button class="primary-button" type="submit">
+              <span class="button-label">Continuar</span>
+              <span class="button-loader" aria-hidden="true"></span>
+            </button>
+          </form>
+
+          <form class="form" id="registerForm">
+            <label>
+              Nome
+              <input type="text" name="nome" autocomplete="name" aria-label="Nome completo" required>
+            </label>
+            <label>
+              Email
+              <input type="email" name="email" autocomplete="email" inputmode="email" aria-label="Email corporativo" required>
+            </label>
+            <label>
+              Perfil
+              <select name="perfil" aria-label="Perfil de acesso" required>
+                <option value="funcionario">Funcionario</option>
+                <option value="n1">Analista N1</option>
+                <option value="n2">Analista N2</option>
+                <option value="gestor">Gestor</option>
+              </select>
+            </label>
+            <label>
+              Senha
+              <span class="password-field">
+                <input type="password" name="senha" autocomplete="new-password" minlength="8" aria-label="Nova senha" required>
+                <button class="toggle-password" type="button" data-password-toggle aria-label="Mostrar ou ocultar senha">Ver</button>
+              </span>
+            </label>
+            <label>
+              Confirmar senha
+              <span class="password-field">
+                <input type="password" name="confirmarSenha" autocomplete="new-password" minlength="8" aria-label="Confirmar nova senha" required>
+                <button class="toggle-password" type="button" data-password-toggle aria-label="Mostrar ou ocultar senha">Ver</button>
+              </span>
+            </label>
+            <button class="primary-button" type="submit">
+              <span class="button-label">Criar conta</span>
+              <span class="button-loader" aria-hidden="true"></span>
+            </button>
+          </form>
+
+          <form class="form" id="recoverForm">
+            <label>
+              Email
+              <input type="email" name="email" autocomplete="email" inputmode="email" aria-label="Email para recuperacao" required>
+            </label>
+            <button class="secondary-button" id="requestResetButton" type="button">
+              Solicitar codigo
+            </button>
+            <label>
+              Codigo recebido
+              <input type="text" name="token" autocomplete="one-time-code" aria-label="Codigo de recuperacao">
+            </label>
+            <label>
+              Nova senha
+              <span class="password-field">
+                <input type="password" name="novaSenha" autocomplete="new-password" minlength="8" aria-label="Nova senha">
+                <button class="toggle-password" type="button" data-password-toggle aria-label="Mostrar ou ocultar senha">Ver</button>
+              </span>
+            </label>
+            <label>
+              Confirmar nova senha
+              <span class="password-field">
+                <input type="password" name="confirmarSenha" autocomplete="new-password" minlength="8" aria-label="Confirmar nova senha">
+                <button class="toggle-password" type="button" data-password-toggle aria-label="Mostrar ou ocultar senha">Ver</button>
+              </span>
+            </label>
+            <button class="primary-button" type="submit">
+              <span class="button-label">Redefinir senha</span>
+              <span class="button-loader" aria-hidden="true"></span>
+            </button>
+          </form>
+        </div>
+
+        <p class="message" id="message" role="status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <section class="dashboard hidden" id="dashboard" aria-label="Dashboard do LaneDesk">
+      <header class="dashboard-header">
+        <div>
+          <p class="eyebrow" id="portalEyebrow">Fila autenticada</p>
+          <h2 id="dashboardTitle">LaneDesk</h2>
+          <p id="dashboardSubtitle"></p>
+        </div>
+        <div class="dashboard-actions">
+          <button class="notification-button" id="notificationButton" type="button" aria-label="Abrir notificacoes" aria-expanded="false" aria-controls="notificationPanel">
+            <span class="notification-bell" aria-hidden="true"></span>
+            <strong id="notificationCount">0</strong>
+          </button>
+          <button class="secondary-button compact" id="logoutButton" type="button">Sair</button>
+        </div>
+      </header>
+
+      <section class="notification-panel hidden" id="notificationPanel" aria-label="Notificacoes do sistema">
+        <div class="notification-panel-header">
+          <strong>Notificacoes</strong>
+          <button class="link-button" id="clearNotificationsButton" type="button">Limpar</button>
+        </div>
+        <div class="notification-list" id="notificationList">
+          <p class="empty-notification">Nenhuma notificacao no momento.</p>
+        </div>
+      </section>
+
+      <section class="portal-note employee-only">
+        <strong>Portal do funcionario</strong>
+        <span>Abra chamados para suporte interno e acompanhe o andamento das suas solicitacoes.</span>
+      </section>
+
+      <section class="portal-note it-only">
+        <strong>Portal da T.I.</strong>
+        <span>Priorize, assuma, escale e resolva chamados conforme sua fila de atendimento.</span>
+      </section>
+
+      <section class="metrics" aria-label="Metricas dos chamados">
+        <article>
+          <span id="metricOpen">0</span>
+          <p>Abertos</p>
+        </article>
+        <article>
+          <span id="metricProgress">0</span>
+          <p>Em andamento</p>
+        </article>
+        <article>
+          <span id="metricCritical">0</span>
+          <p>Criticos</p>
+        </article>
+        <article>
+          <span id="metricSolved">0</span>
+          <p>Resolvidos</p>
+        </article>
+        <article class="danger-metric">
+          <span id="metricOverdue">0</span>
+          <p>Vencidos</p>
+        </article>
+      </section>
+
+      <div class="workspace-grid">
+        <form class="panel ticket-form" id="ticketForm">
+          <div class="panel-kicker">Nova solicitacao</div>
+          <h3>Abrir chamado</h3>
+          <label>
+            Titulo
+            <input type="text" name="titulo" minlength="4" maxlength="100" required>
+          </label>
+          <label>
+            Descricao
+            <textarea name="descricao" rows="5" minlength="10" maxlength="1200" required></textarea>
+          </label>
+          <div class="form-row">
+            <label>
+              Categoria
+              <select name="categoria" required>
+                <option value="tecnico">Tecnico</option>
+                <option value="infraestrutura">Infraestrutura</option>
+                <option value="administrativo">Administrativo</option>
+              </select>
+            </label>
+            <label>
+              Impacto
+              <select name="impacto" required>
+                <option value="baixo">Baixo</option>
+                <option value="medio">Medio</option>
+                <option value="alto">Alto</option>
+              </select>
+            </label>
+            <label>
+              Urgencia
+              <select name="urgencia" required>
+                <option value="baixa">Baixa</option>
+                <option value="media">Media</option>
+                <option value="alta">Alta</option>
+              </select>
+            </label>
+          </div>
+          <label class="file-field">
+            Anexos
+            <input class="file-input-native" type="file" name="anexos" id="ticketAttachments" accept="image/png,image/jpeg,image/webp,image/gif" multiple>
+            <span class="file-picker-ui">
+              <span class="file-picker-button" data-file-button>Escolher arquivos</span>
+              <span class="file-picker-status" data-file-status>Nenhum arquivo escolhido</span>
+            </span>
+          </label>
+          <button class="primary-button" type="submit">Abrir chamado</button>
+        </form>
+
+        <section class="panel queue-panel">
+          <div class="panel-title">
+            <div>
+              <div class="panel-kicker">Acompanhamento</div>
+              <h3 id="queueTitle">Fila de chamados</h3>
+            </div>
+            <button class="link-button" id="refreshButton" type="button">Atualizar</button>
+          </div>
+
+          <div class="filters" aria-label="Filtros">
+            <select id="statusFilter">
+              <option value="">Todos os status</option>
+              <option value="aberto">Aberto</option>
+              <option value="triagem">Triagem</option>
+              <option value="andamento">Em andamento</option>
+              <option value="resolvido">Resolvido</option>
+              <option value="fechado">Fechado</option>
+            </select>
+            <select id="categoryFilter">
+              <option value="">Todas as categorias</option>
+              <option value="tecnico">Tecnico</option>
+              <option value="infraestrutura">Infraestrutura</option>
+              <option value="administrativo">Administrativo</option>
+            </select>
+            <select id="priorityFilter">
+              <option value="">Todas as prioridades</option>
+              <option value="baixa">Baixa</option>
+              <option value="media">Media</option>
+              <option value="alta">Alta</option>
+              <option value="critica">Critica</option>
+            </select>
+            <select id="slaFilter">
+              <option value="">Todos os SLAs</option>
+              <option value="vencido">Vencidos</option>
+              <option value="vence-breve">Vencem em breve</option>
+              <option value="no-prazo">Dentro do prazo</option>
+              <option value="resolvido">Resolvidos no SLA</option>
+              <option value="resolvido-atrasado">Resolvidos fora do SLA</option>
+            </select>
+          </div>
+
+          <div class="ticket-list" id="ticketList"></div>
+        </section>
+
+        <section class="panel detail-panel" id="detailPanel">
+          <div class="empty-state" id="emptyDetail">Selecione um chamado para ver a timeline.</div>
+          <div class="ticket-detail hidden" id="ticketDetail">
+            <div class="detail-heading">
+              <div>
+                <p class="eyebrow" id="detailMeta"></p>
+                <h3 id="detailTitle"></h3>
+                <p id="detailDescription"></p>
+              </div>
+              <span class="priority-pill" id="detailPriority"></span>
+            </div>
+
+            <div class="detail-grid">
+              <div>
+                <span>Status</span>
+                <strong id="detailStatus"></strong>
+              </div>
+              <div>
+                <span>Fila</span>
+                <strong id="detailQueue"></strong>
+              </div>
+              <div>
+                <span>Solicitante</span>
+                <strong id="detailRequester"></strong>
+              </div>
+              <div>
+                <span>Responsavel</span>
+                <strong id="detailAssignee"></strong>
+              </div>
+              <div>
+                <span>SLA</span>
+                <strong id="detailSlaStatus"></strong>
+              </div>
+              <div>
+                <span>Prazo</span>
+                <strong id="detailSlaDeadline"></strong>
+              </div>
+            </div>
+
+            <form class="actions-form" id="actionsForm">
+              <label>
+                Status
+                <select name="status">
+                  <option value="">Manter status</option>
+                  <option value="aberto">Aberto</option>
+                  <option value="triagem">Triagem</option>
+                  <option value="andamento">Em andamento</option>
+                  <option value="resolvido">Resolvido</option>
+                  <option value="fechado">Fechado</option>
+                </select>
+              </label>
+              <label>
+                Fila
+                <select name="fila">
+                  <option value="">Manter fila</option>
+                  <option value="n1">N1</option>
+                  <option value="n2">N2</option>
+                </select>
+              </label>
+              <label>
+                Prioridade
+                <select name="prioridade">
+                  <option value="">Manter prioridade</option>
+                  <option value="baixa">Baixa</option>
+                  <option value="media">Media</option>
+                  <option value="alta">Alta</option>
+                  <option value="critica">Critica</option>
+                </select>
+              </label>
+              <label>
+                Responsavel
+                <select name="responsavel" id="assigneeSelect">
+                  <option value="">Sem responsavel</option>
+                </select>
+              </label>
+              <button class="primary-button" type="submit">Aplicar alteracoes</button>
+            </form>
+
+            <button class="primary-button hidden" id="closeResolvedButton" type="button">Fechar chamado resolvido</button>
+
+            <form class="comment-form" id="commentForm">
+              <label>
+                Comentario
+                <textarea name="comentario" rows="3" maxlength="500" required></textarea>
+              </label>
+              <button class="secondary-button" type="submit">Comentar</button>
+            </form>
+
+            <section class="chat-panel" aria-label="Chat em tempo real do chamado">
+              <div class="chat-header">
+                <h3>Chat do chamado</h3>
+                <span id="chatStatus">Desconectado</span>
+              </div>
+              <div class="chat-messages" id="chatMessages">
+                <p class="empty-notification">Selecione um chamado para iniciar a conversa.</p>
+              </div>
+              <form class="chat-form" id="chatForm">
+                <label>
+                  Mensagem
+                  <textarea name="mensagem" rows="2" maxlength="800" required></textarea>
+                </label>
+                <button class="primary-button" type="submit">Enviar mensagem</button>
+              </form>
+            </section>
+
+            <form class="attachment-form" id="attachmentForm">
+              <label class="file-field">
+                Anexar evidencias
+                <input class="file-input-native" type="file" name="anexos" accept="image/png,image/jpeg,image/webp,image/gif" multiple required>
+                <span class="file-picker-ui">
+                  <span class="file-picker-button" data-file-button>Escolher arquivos</span>
+                  <span class="file-picker-status" data-file-status>Nenhum arquivo escolhido</span>
+                </span>
+              </label>
+              <button class="secondary-button" type="submit">Enviar anexos</button>
+            </form>
+
+            <section class="attachments-section">
+              <h3>Anexos</h3>
+              <div class="attachment-list" id="attachmentList"></div>
+            </section>
+
+            <div>
+              <h3>Timeline</h3>
+              <ul class="timeline" id="timelineList"></ul>
+            </div>
+          </div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

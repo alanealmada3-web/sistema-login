@@ -1,0 +1,17 @@
+node_modules/
+.env
+logs/
+uploads/
+server.out.log
+server.err.log
+npm-debug.log*
+.env
+.env_backup
+*_backup
+node_modules
+node_modules_backup
+logs
+logs_backup
+uploads
+uploads_backup
+server.err
