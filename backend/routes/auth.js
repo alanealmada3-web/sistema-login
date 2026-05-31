@@ -181,28 +181,18 @@ router.post('/cadastro', rateLimiters.cadastro, async (req, res) => {
       email,
       senha: senhaCriptografada,
       perfil: 'funcionario',
-      emailVerificado: false,
+      emailVerificado: true,
       historico: [{ acao: 'Conta criada' }],
     })
 
-    const codigoVerificacao = await setVerificationCode(novoUsuario)
     await novoUsuario.save()
-    let emailStatus = { emailEnviado: false }
-
-    try {
-      emailStatus = await sendOrExposeVerificationCode(novoUsuario, codigoVerificacao)
-    } catch (emailError) {
-      console.error('Erro envio codigo cadastro:', emailError)
-    }
 
     return res.status(201).json({
-      mensagem: emailStatus.emailEnviado
-        ? 'Usuario cadastrado com sucesso. Verifique seu email antes de entrar.'
-        : 'Usuario cadastrado, mas nao foi possivel enviar o email de verificacao. Tente reenviar o codigo mais tarde.',
+      mensagem: 'Usuario cadastrado com sucesso. Voce ja pode entrar.',
       email,
       usuario: publicUser(novoUsuario),
-      precisaVerificarEmail: true,
-      emailEnviado: emailStatus.emailEnviado,
+      precisaVerificarEmail: false,
+      emailEnviado: false,
     })
   } catch (error) {
     console.error('Erro cadastro:', error)
@@ -381,21 +371,6 @@ router.post('/login', rateLimiters.login, async (req, res) => {
       })
       return res.status(400).json({
         mensagem: 'Email ou senha incorretos',
-      })
-    }
-
-    if (!usuario.emailVerificado) {
-      await registerLoginAudit(req, {
-        usuario,
-        email,
-        status: 'falha',
-        motivo: 'Email nao verificado',
-        provedor: 'local',
-      })
-      return res.status(403).json({
-        mensagem: 'Verifique seu email antes de entrar',
-        precisaVerificarEmail: true,
-        email: usuario.email,
       })
     }
 

@@ -9,21 +9,22 @@ function read(relativePath) {
   return fs.readFileSync(path.join(root, relativePath), 'utf8')
 }
 
-test('cadastro publico sempre cria funcionario e email nao verificado', () => {
+test('cadastro publico sempre cria funcionario com email verificado temporariamente', () => {
   const auth = read('backend/routes/auth.js')
 
   assert.match(auth, /perfil:\s*'funcionario'/)
-  assert.match(auth, /emailVerificado:\s*false/)
+  assert.match(auth, /emailVerificado:\s*true/)
   assert.doesNotMatch(auth, /perfil:\s*req\.body\.perfil/)
   assert.match(auth, /console\.error\('Erro cadastro:',\s*error\)/)
-  assert.match(auth, /console\.error\('Erro envio codigo cadastro:',\s*emailError\)/)
+  assert.match(auth, /async function sendOrExposeVerificationCode/)
 })
 
-test('login local bloqueia email nao verificado', () => {
+test('login local nao bloqueia email nao verificado temporariamente', () => {
   const auth = read('backend/routes/auth.js')
+  const loginRoute = auth.slice(auth.indexOf("router.post('/login'"), auth.indexOf("router.post('/recuperar-senha'"))
 
-  assert.match(auth, /if\s*\(!usuario\.emailVerificado\)/)
-  assert.match(auth, /precisaVerificarEmail:\s*true/)
+  assert.doesNotMatch(loginRoute, /if\s*\(!usuario\.emailVerificado\)/)
+  assert.doesNotMatch(loginRoute, /precisaVerificarEmail:\s*true/)
 })
 
 test('refresh token usa persistencia MongoDB e rotacao', () => {
