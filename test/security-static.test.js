@@ -15,6 +15,8 @@ test('cadastro publico sempre cria funcionario e email nao verificado', () => {
   assert.match(auth, /perfil:\s*'funcionario'/)
   assert.match(auth, /emailVerificado:\s*false/)
   assert.doesNotMatch(auth, /perfil:\s*req\.body\.perfil/)
+  assert.match(auth, /console\.error\('Erro cadastro:',\s*error\)/)
+  assert.match(auth, /console\.error\('Erro envio codigo cadastro:',\s*emailError\)/)
 })
 
 test('login local bloqueia email nao verificado', () => {

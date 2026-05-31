@@ -133,7 +133,7 @@ async function setVerificationCode(usuario) {
 
 async function sendOrExposeVerificationCode(usuario, codigoVerificacao) {
   if (!isEmailConfigured()) {
-    throw new Error('SMTP nao configurado')
+    return { emailEnviado: false }
   }
 
   await sendVerificationEmail({
@@ -141,7 +141,7 @@ async function sendOrExposeVerificationCode(usuario, codigoVerificacao) {
     name: usuario.nome,
     code: codigoVerificacao,
   })
-  return {}
+  return { emailEnviado: true }
 }
 
 async function requireProfileAdmin(req, res, next) {
@@ -186,17 +186,33 @@ router.post('/cadastro', rateLimiters.cadastro, async (req, res) => {
     })
 
     const codigoVerificacao = await setVerificationCode(novoUsuario)
-    const devCode = await sendOrExposeVerificationCode(novoUsuario, codigoVerificacao)
     await novoUsuario.save()
+    let emailStatus = { emailEnviado: false }
+
+    try {
+      emailStatus = await sendOrExposeVerificationCode(novoUsuario, codigoVerificacao)
+    } catch (emailError) {
+      console.error('Erro envio codigo cadastro:', emailError)
+    }
 
     return res.status(201).json({
-      mensagem: 'Usuario cadastrado com sucesso. Verifique seu email antes de entrar.',
+      mensagem: emailStatus.emailEnviado
+        ? 'Usuario cadastrado com sucesso. Verifique seu email antes de entrar.'
+        : 'Usuario cadastrado, mas nao foi possivel enviar o email de verificacao. Tente reenviar o codigo mais tarde.',
       email,
       usuario: publicUser(novoUsuario),
       precisaVerificarEmail: true,
-      ...devCode,
+      emailEnviado: emailStatus.emailEnviado,
     })
   } catch (error) {
+    console.error('Erro cadastro:', error)
+
+    if (error?.code === 11000) {
+      return res.status(400).json({
+        mensagem: 'Email ja cadastrado',
+      })
+    }
+
     return res.status(500).json({
       mensagem: 'Erro ao cadastrar usuario',
     })

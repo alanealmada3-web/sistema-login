@@ -181,7 +181,8 @@ const i18n = {
       expiredSession: 'Sessao expirada. Entre novamente.',
       signingIn: 'Entrando...',
       creatingAccount: 'Criando conta...',
-      accountCreated: 'Conta criada. Voce ja pode entrar sem codigo de email.',
+      accountCreated: 'Conta criada. Verifique seu email antes de entrar.',
+      accountCreatedEmailPending: 'Conta criada, mas o email de verificacao nao foi enviado. Tente reenviar o codigo mais tarde.',
       requestingRecovery: 'Solicitando recuperacao...',
       autoFilledCode: 'Codigo preenchido automaticamente.',
       resettingPassword: 'Redefinindo senha...',
@@ -343,7 +344,8 @@ const i18n = {
       expiredSession: 'Session expired. Sign in again.',
       signingIn: 'Signing in...',
       creatingAccount: 'Creating account...',
-      accountCreated: 'Account created. You can now sign in without an email code.',
+      accountCreated: 'Account created. Verify your email before signing in.',
+      accountCreatedEmailPending: 'Account created, but the verification email was not sent. Try resending the code later.',
       requestingRecovery: 'Requesting recovery...',
       autoFilledCode: 'Code filled automatically.',
       resettingPassword: 'Resetting password...',
@@ -1318,14 +1320,14 @@ registerForm.addEventListener('submit', async (event) => {
     }
 
     delete formData.confirmarSenha
-    await request('/auth/cadastro', {
+    const data = await request('/auth/cadastro', {
       method: 'POST',
       body: JSON.stringify(formData),
     })
 
     registerForm.reset()
     showTab('login')
-    setMessage(tr('accountCreated'), 'success')
+    setMessage(data.emailEnviado === false ? tr('accountCreatedEmailPending') : tr('accountCreated'), 'success')
   } catch (error) {
     setMessage(error.message, 'error')
   } finally {
