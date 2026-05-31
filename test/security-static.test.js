@@ -47,6 +47,8 @@ test('rate limit cobre endpoints sensiveis e usa express-rate-limit', () => {
   assert.match(auth, /router\.post\('\/recuperar-senha',\s*rateLimiters\.recuperarSenhaIp,\s*rateLimiters\.recuperarSenhaEmail/)
   assert.match(auth, /router\.post\('\/reenviar-codigo',\s*rateLimiters\.reenviarCodigo/)
   assert.match(tickets, /rateLimiters\.upload/)
+  assert.doesNotMatch(limiter, /Rate limiting indisponivel/)
+  assert.match(limiter, /RATE_LIMIT_DISABLED/)
 })
 
 test('uploads validam assinatura real de imagem', () => {

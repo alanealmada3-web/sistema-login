@@ -1,7 +1,7 @@
 const { ipKeyGenerator, rateLimit } = require('express-rate-limit')
 const { RedisStore } = require('rate-limit-redis')
 
-const { getRedisClient, isRedisRequired } = require('../services/redisClient')
+const { getRedisClient } = require('../services/redisClient')
 
 function clientIp(req) {
   return ipKeyGenerator(req.ip || req.socket.remoteAddress || '127.0.0.1')
@@ -28,10 +28,19 @@ function buildLimiter({ name, max, windowSeconds, keyGenerator, store }) {
   })
 }
 
+function isRateLimitDisabled() {
+  return process.env.RATE_LIMIT_DISABLED === 'true'
+}
+
 function redisRateLimit(config) {
   let limiterPromise = null
+  let memoryLimiter = null
 
   return async (req, res, next) => {
+    if (isRateLimitDisabled()) {
+      return next()
+    }
+
     try {
       if (!limiterPromise) {
         limiterPromise = (async () => {
@@ -52,14 +61,11 @@ function redisRateLimit(config) {
     } catch (error) {
       limiterPromise = null
 
-      if (isRedisRequired()) {
-        return res.status(503).json({
-          mensagem: 'Rate limiting indisponivel',
-        })
+      if (!memoryLimiter) {
+        memoryLimiter = buildLimiter(config)
       }
 
-      const fallbackLimiter = buildLimiter(config)
-      return fallbackLimiter(req, res, next)
+      return memoryLimiter(req, res, next)
     }
   }
 }

@@ -3,14 +3,11 @@ const { createClient } = require('redis')
 let clientPromise = null
 
 function isRedisRequired() {
-  return process.env.REQUIRE_REDIS === 'true' || process.env.NODE_ENV === 'production'
+  return process.env.REQUIRE_REDIS === 'true'
 }
 
 async function getRedisClient() {
   if (!process.env.REDIS_URL) {
-    if (isRedisRequired()) {
-      throw new Error('REDIS_URL obrigatorio para rate limiting distribuido')
-    }
     return null
   }
 
