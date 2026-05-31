@@ -9,14 +9,26 @@ function read(relativePath) {
   return fs.readFileSync(path.join(root, relativePath), 'utf8')
 }
 
-test('cadastro publico sempre cria funcionario com email verificado temporariamente', () => {
+test('cadastro publico decide perfil apenas pelo modo permitido', () => {
   const auth = read('backend/routes/auth.js')
 
-  assert.match(auth, /perfil:\s*'funcionario'/)
+  assert.match(auth, /function resolveRegistrationProfile\(modoCadastro\)/)
+  assert.match(auth, /modoCadastro === 'ti' \? 'n1' : 'funcionario'/)
+  assert.match(auth, /perfil:\s*resolveRegistrationProfile\(req\.body\.modoCadastro\)/)
   assert.match(auth, /emailVerificado:\s*true/)
   assert.doesNotMatch(auth, /perfil:\s*req\.body\.perfil/)
   assert.match(auth, /console\.error\('Erro cadastro:',\s*error\)/)
   assert.match(auth, /async function sendOrExposeVerificationCode/)
+})
+
+test('frontend envia modoCadastro e nao expõe select livre de perfil', () => {
+  const app = read('public/app.js')
+  const html = read('public/index.html')
+
+  assert.match(html, /name="modoCadastro"/)
+  assert.doesNotMatch(html, /name="perfil"/)
+  assert.match(app, /formData\.modoCadastro = selectedAccess === 'ti' \? 'ti' : 'funcionario'/)
+  assert.match(app, /delete formData\.perfil/)
 })
 
 test('login local nao bloqueia email nao verificado temporariamente', () => {

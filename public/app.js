@@ -462,7 +462,6 @@ function labelFormFields() {
     [loginForm.senha, tr('password')],
     [registerForm.nome, tr('name')],
     [registerForm.email, tr('email')],
-    [registerForm.perfil, tr('profile')],
     [registerForm.senha, tr('password')],
     [registerForm.confirmarSenha, tr('confirmPassword')],
     [recoverForm.email, tr('email')],
@@ -579,11 +578,6 @@ function applyStaticTranslations() {
     message.textContent = translatedMessages.get(message.textContent)
   }
 
-  setOptionText(registerForm.perfil, 'funcionario', labels.perfil.funcionario)
-  setOptionText(registerForm.perfil, 'n1', labels.perfil.n1)
-  setOptionText(registerForm.perfil, 'n2', labels.perfil.n2)
-  setOptionText(registerForm.perfil, 'gestor', labels.perfil.gestor)
-
   setOptionText(ticketForm.categoria, 'tecnico', labels.categoria.tecnico)
   setOptionText(ticketForm.categoria, 'infraestrutura', labels.categoria.infraestrutura)
   setOptionText(ticketForm.categoria, 'administrativo', labels.categoria.administrativo)
@@ -642,11 +636,7 @@ function updateAuthAccess(access) {
     ? tr('authItSubtitle')
     : tr('authEmployeeSubtitle')
 
-  const profileSelect = registerForm.perfil
-  Array.from(profileSelect.options).forEach((option) => {
-    option.hidden = access === 'ti' ? option.value === 'funcionario' : option.value !== 'funcionario'
-  })
-  profileSelect.value = access === 'ti' ? 'n1' : 'funcionario'
+  registerForm.modoCadastro.value = access === 'ti' ? 'ti' : 'funcionario'
 }
 
 function setMessage(text, type = '') {
@@ -1320,6 +1310,8 @@ registerForm.addEventListener('submit', async (event) => {
     }
 
     delete formData.confirmarSenha
+    delete formData.perfil
+    formData.modoCadastro = selectedAccess === 'ti' ? 'ti' : 'funcionario'
     const data = await request('/auth/cadastro', {
       method: 'POST',
       body: JSON.stringify(formData),

@@ -108,6 +108,10 @@ function publicUser(usuario) {
   }
 }
 
+function resolveRegistrationProfile(modoCadastro) {
+  return modoCadastro === 'ti' ? 'n1' : 'funcionario'
+}
+
 function createVerificationCode() {
   return crypto.randomInt(100000, 999999).toString()
 }
@@ -180,7 +184,7 @@ router.post('/cadastro', rateLimiters.cadastro, async (req, res) => {
       nome: String(nome).trim(),
       email,
       senha: senhaCriptografada,
-      perfil: 'funcionario',
+      perfil: resolveRegistrationProfile(req.body.modoCadastro),
       emailVerificado: true,
       historico: [{ acao: 'Conta criada' }],
     })
