@@ -13,7 +13,9 @@ test('cadastro publico decide perfil apenas pelo modo permitido', () => {
   const auth = read('backend/routes/auth.js')
 
   assert.match(auth, /function resolveRegistrationProfile\(modoCadastro\)/)
-  assert.match(auth, /modoCadastro === 'ti' \? 'n1' : 'funcionario'/)
+  assert.match(auth, /if\s*\(modoCadastro === 'ti'\)/)
+  assert.match(auth, /return 'n1'/)
+  assert.match(auth, /return 'funcionario'/)
   assert.match(auth, /perfil:\s*resolveRegistrationProfile\(req\.body\.modoCadastro\)/)
   assert.match(auth, /console\.log\('modoCadastro recebido:',\s*req\.body\.modoCadastro\)/)
   assert.match(auth, /emailVerificado:\s*true/)

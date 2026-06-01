@@ -109,7 +109,11 @@ function publicUser(usuario) {
 }
 
 function resolveRegistrationProfile(modoCadastro) {
-  return modoCadastro === 'ti' ? 'n1' : 'funcionario'
+  if (modoCadastro === 'ti') {
+    return 'n1'
+  }
+
+  return 'funcionario'
 }
 
 function createVerificationCode() {
