@@ -16,10 +16,12 @@ test('cadastro publico decide perfil apenas pelo modo permitido', () => {
   assert.match(auth, /if\s*\(modoCadastro === 'ti'\)/)
   assert.match(auth, /return 'n1'/)
   assert.match(auth, /return 'funcionario'/)
-  assert.match(auth, /perfil:\s*resolveRegistrationProfile\(req\.body\.modoCadastro\)/)
-  assert.match(auth, /console\.log\('modoCadastro recebido:',\s*req\.body\.modoCadastro\)/)
+  assert.match(auth, /perfilCadastro = resolveRegistrationProfile\(req\.body\.modoCadastro\)/)
+  assert.match(auth, /console\.log\('modoCadastro:',\s*req\.body\.modoCadastro\)/)
   assert.match(auth, /emailVerificado:\s*true/)
   assert.doesNotMatch(auth, /perfil:\s*req\.body\.perfil/)
+  assert.match(auth, /Senha local adicionada a conta Google/)
+  assert.match(auth, /console\.error\('Erro real:',\s*error\)/)
   assert.match(auth, /console\.error\('Erro cadastro:',\s*error\)/)
   assert.match(auth, /async function sendOrExposeVerificationCode/)
 })
@@ -79,6 +81,33 @@ test('uploads validam assinatura real de imagem', () => {
   assert.match(secureUpload, /allowedImageMimes/)
   assert.match(auth, /createImageUpload/)
   assert.match(tickets, /createImageUpload/)
+})
+
+test('fila de ti mantem historico visivel na listagem', () => {
+  const tickets = read('backend/routes/tickets.js')
+  const app = read('public/app.js')
+
+  assert.match(tickets, /'timeline\.autor': usuario\._id/)
+  assert.match(tickets, /console\.log\('Perfil:', usuario\.perfil\)/)
+  assert.match(tickets, /console\.log\('Filtro tickets:', filter\)/)
+  assert.match(tickets, /router\.get\('\/historico'/)
+  assert.match(tickets, /console\.error\('Erro real:',\s*error\)/)
+  assert.match(tickets, /\{ fila: 'n1' \}/)
+  assert.match(tickets, /\{ fila: 'n2' \}/)
+  assert.doesNotMatch(tickets, /\{ fila: 'n1', responsavel: null, status: \{ \$in: \['aberto', 'triagem'\] \} \}/)
+  assert.doesNotMatch(tickets, /\.limit\(120\)/)
+  assert.match(app, /function resetTicketFilters\(\)/)
+  assert.match(app, /resetTicketFilters\(\)\n\s*await loadTickets\(false\)/)
+  assert.match(app, /resetTicketFilters\(\)\n\s*await loadTickets\(true\)/)
+})
+
+test('smtp usa variaveis corretas do render', () => {
+  const emailService = read('backend/services/emailService.js')
+
+  assert.match(emailService, /process\.env\.SMTP_USER/)
+  assert.match(emailService, /process\.env\.SMTP_PASS/)
+  assert.match(emailService, /process\.env\.EMAIL_FROM/)
+  assert.doesNotMatch(emailService, /EMAIL_USER|EMAIL_PASS/)
 })
 
 test('perfil nao retorna historico nem segredos', () => {

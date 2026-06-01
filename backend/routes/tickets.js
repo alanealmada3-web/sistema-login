@@ -175,8 +175,9 @@ function canView(ticket, usuario) {
   if (perfil === 'gestor') return true
   if (String(ticket.solicitante?._id || ticket.solicitante) === userId) return true
   if (String(ticket.responsavel?._id || ticket.responsavel || '') === userId) return true
+  if ((ticket.timeline || []).some((item) => String(item.autor?._id || item.autor || '') === userId)) return true
   if (perfil === 'n1') {
-    return ticket.fila === 'n1' && ['baixa', 'media'].includes(ticket.prioridade)
+    return ticket.fila === 'n1'
   }
   if (perfil === 'n2') {
     return ticket.fila === 'n2' || ['alta', 'critica'].includes(ticket.prioridade)
@@ -186,6 +187,8 @@ function canView(ticket, usuario) {
 }
 
 function listFilter(usuario) {
+  const attendedByUser = { 'timeline.autor': usuario._id }
+
   if (usuario.perfil === 'gestor') return {}
   if (usuario.perfil === 'funcionario') return { solicitante: usuario._id }
   if (usuario.perfil === 'n1') {
@@ -193,8 +196,8 @@ function listFilter(usuario) {
       $or: [
         { solicitante: usuario._id },
         { responsavel: usuario._id },
-        { fila: 'n1', prioridade: { $in: ['baixa', 'media'] } },
-        { fila: 'n1', responsavel: null, status: { $in: ['aberto', 'triagem'] } },
+        attendedByUser,
+        { fila: 'n1' },
       ],
     }
   }
@@ -203,6 +206,7 @@ function listFilter(usuario) {
       $or: [
         { solicitante: usuario._id },
         { responsavel: usuario._id },
+        attendedByUser,
         { fila: 'n2' },
         { prioridade: { $in: ['alta', 'critica'] } },
       ],
@@ -301,6 +305,7 @@ router.post('/', rateLimiters.upload, uploadTicketFiles, async (req, res) => {
 
     return res.status(201).json(withSlaInfo(savedTicket))
   } catch (error) {
+    console.error('Erro real:', error)
     cleanupUploadedFiles(req.files)
     return res.status(500).json({ mensagem: 'Erro ao abrir chamado' })
   }
@@ -314,13 +319,39 @@ router.get('/', async (req, res) => {
       return res.status(401).json({ mensagem: 'Usuario nao encontrado' })
     }
 
-    const tickets = await populateTicket(Ticket.find(listFilter(usuario)))
+    const filter = listFilter(usuario)
+    console.log('Perfil:', usuario.perfil)
+    console.log('Filtro tickets:', filter)
+
+    const tickets = await populateTicket(Ticket.find(filter))
       .sort({ updatedAt: -1 })
-      .limit(120)
 
     return res.json(withSlaInfoList(tickets))
   } catch (error) {
+    console.error('Erro real:', error)
     return res.status(500).json({ mensagem: 'Erro ao listar chamados' })
+  }
+})
+
+router.get('/historico', async (req, res) => {
+  try {
+    const usuario = await getCurrentUser(req)
+
+    if (!usuario) {
+      return res.status(401).json({ mensagem: 'Usuario nao encontrado' })
+    }
+
+    const filter = listFilter(usuario)
+    console.log('Perfil:', usuario.perfil)
+    console.log('Filtro tickets:', filter)
+
+    const tickets = await populateTicket(Ticket.find(filter))
+      .sort({ updatedAt: -1 })
+
+    return res.json(withSlaInfoList(tickets))
+  } catch (error) {
+    console.error('Erro real:', error)
+    return res.status(500).json({ mensagem: 'Erro ao listar historico de chamados' })
   }
 })
 
@@ -341,6 +372,7 @@ router.get('/:id', async (req, res) => {
 
     return res.json(withSlaInfo(ticket))
   } catch (error) {
+    console.error('Erro real:', error)
     return res.status(500).json({ mensagem: 'Erro ao buscar chamado' })
   }
 })
@@ -432,6 +464,7 @@ router.patch('/:id', async (req, res) => {
     const updatedTicket = await populateTicket(Ticket.findById(ticket._id))
     return res.json(withSlaInfo(updatedTicket))
   } catch (error) {
+    console.error('Erro real:', error)
     return res.status(500).json({ mensagem: 'Erro ao atualizar chamado' })
   }
 })
@@ -460,6 +493,7 @@ router.post('/:id/comentarios', async (req, res) => {
     const updatedTicket = await populateTicket(Ticket.findById(ticket._id))
     return res.status(201).json(withSlaInfo(updatedTicket))
   } catch (error) {
+    console.error('Erro real:', error)
     return res.status(500).json({ mensagem: 'Erro ao comentar chamado' })
   }
 })
@@ -493,6 +527,7 @@ router.post('/:id/anexos', rateLimiters.upload, uploadTicketFiles, async (req, r
     const updatedTicket = await populateTicket(Ticket.findById(ticket._id))
     return res.status(201).json(withSlaInfo(updatedTicket))
   } catch (error) {
+    console.error('Erro real:', error)
     cleanupUploadedFiles(req.files)
     return res.status(500).json({ mensagem: 'Erro ao anexar arquivos' })
   }

@@ -1046,6 +1046,13 @@ function filteredTickets() {
   })
 }
 
+function resetTicketFilters() {
+  statusFilter.value = ''
+  categoryFilter.value = ''
+  priorityFilter.value = ''
+  slaFilter.value = ''
+}
+
 function renderTickets() {
   renderMetrics()
   const visibleTickets = filteredTickets()
@@ -1431,6 +1438,7 @@ ticketForm.addEventListener('submit', async (event) => {
     })
     ticketForm.reset()
     updateFilePicker(ticketAttachmentsInput)
+    resetTicketFilters()
     await loadTickets(false)
     selectTicket(ticket._id)
     notify(tr('ticketOpenedTitle'), tr('ticketOpenedDescription'))
@@ -1488,6 +1496,7 @@ actionsForm.addEventListener('submit', async (event) => {
       method: 'PATCH',
       body: JSON.stringify(payload),
     })
+    resetTicketFilters()
     await loadTickets(true)
     notify(tr('ticketUpdatedTitle'), tr('ticketUpdatedDescription'))
   } catch (error) {

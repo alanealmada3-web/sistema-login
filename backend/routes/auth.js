@@ -166,7 +166,7 @@ router.post('/cadastro', rateLimiters.cadastro, async (req, res) => {
   try {
     const { nome, senha } = req.body
     const email = normalizeEmail(req.body.email)
-    console.log('modoCadastro recebido:', req.body.modoCadastro)
+    console.log('modoCadastro:', req.body.modoCadastro)
     const validationError = validateRegisterData({ nome, email, senha })
 
     if (validationError) {
@@ -175,21 +175,40 @@ router.post('/cadastro', rateLimiters.cadastro, async (req, res) => {
       })
     }
 
+    const senhaCriptografada = await bcrypt.hash(senha, 10)
+    const perfilCadastro = resolveRegistrationProfile(req.body.modoCadastro)
     const usuarioExiste = await User.findOne({ email })
 
     if (usuarioExiste) {
-      return res.status(400).json({
-        mensagem: 'Email ja cadastrado',
+      if (usuarioExiste.senha) {
+        return res.status(400).json({
+          mensagem: 'Email ja cadastrado',
+        })
+      }
+
+      usuarioExiste.senha = senhaCriptografada
+      usuarioExiste.emailVerificado = true
+      usuarioExiste.provedor = usuarioExiste.provedor || 'google'
+      if (usuarioExiste.perfil === 'funcionario') {
+        usuarioExiste.perfil = perfilCadastro
+      }
+      addHistory(usuarioExiste, 'Senha local adicionada a conta Google')
+      await usuarioExiste.save()
+
+      return res.status(200).json({
+        mensagem: 'Senha local adicionada com sucesso. Voce ja pode entrar.',
+        email,
+        usuario: publicUser(usuarioExiste),
+        precisaVerificarEmail: false,
+        emailEnviado: false,
       })
     }
-
-    const senhaCriptografada = await bcrypt.hash(senha, 10)
 
     const novoUsuario = new User({
       nome: String(nome).trim(),
       email,
       senha: senhaCriptografada,
-      perfil: resolveRegistrationProfile(req.body.modoCadastro),
+      perfil: perfilCadastro,
       emailVerificado: true,
       historico: [{ acao: 'Conta criada' }],
     })
@@ -204,6 +223,7 @@ router.post('/cadastro', rateLimiters.cadastro, async (req, res) => {
       emailEnviado: false,
     })
   } catch (error) {
+    console.error('Erro real:', error)
     console.error('Erro cadastro:', error)
 
     if (error?.code === 11000) {
@@ -408,6 +428,7 @@ router.post('/login', rateLimiters.login, async (req, res) => {
       usuario: publicUser(usuario),
     })
   } catch (error) {
+    console.error('Erro real:', error)
     await registerLoginAudit(req, {
       email: normalizeEmail(req.body.email),
       status: 'falha',
